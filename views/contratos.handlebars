@@ -1,0 +1,21 @@
+<div>
+  <form action="/mensalidades" method="POST">
+        {{!-- nome --}}
+      <div class="input-group">
+        <label for="valor_mensal">insira o valor mensal</label>
+        <input type="number" id="valor_mensal" name="valor_mensal" required>
+      </div>
+        {{!-- telefone --}}
+      <div class="input-group">
+        <label for="categ">descreva o tipo de pagamento:</label>
+        <input type="text" id="categ" name="categ" required>
+      </div>
+        {{!-- email --}}
+      <div class="input-group">
+        <label for="data_venc">data de vencimento</label>
+        <input type="text" id="data_venc" name="data_venc" required>
+      </div>
+
+      <input type="submit">Enviar</input>
+    </form>
+</div>

@@ -3,6 +3,19 @@
     "express": "^4.21.1",
     "express-handlebars": "^8.0.1",
     "mysql2": "^3.11.4",
+    "nodemon": "^3.1.7",
     "sequelize": "^6.37.5"
-  }
+  },
+  "name": "projeto-final-aps",
+  "version": "1.0.0",
+  "main": "main.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }

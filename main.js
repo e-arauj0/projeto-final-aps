@@ -3,6 +3,7 @@ const app = express();
 const Sequelize = require("sequelize");
 const {engine} = require("express-handlebars");
 
+
 //###Banco de dados###
 const conexaoComBanco = new Sequelize("relatorio", "root", "", {
     host: "localhost",
@@ -57,27 +58,98 @@ const conexaoComBanco = new Sequelize("relatorio", "root", "", {
 mensalidades.sync({force: false})
 cliente.sync({force: false})
 pagamentos.sync({force: false})
+
+
+app.use(
+  express.urlencoded({
+    extended: true
+  })
+)
 //###Rotas###
-app.get("/", function (req, res) {
-    res.send("Rota principal");
+
+
+// ROTA DE LOGIN
+app.get('/login', (req, res) => {
+  res.render('login');
 });
+
+app.use(express.static('public'))
+
+// ROTA DE INICIO
+app.get('/home', (req, res) => {
+  res.render('home');
+});
+
+// ROTA DE EDIÇÃO GERAL
+app.post("/editar", async function (req, res) {
+  const { tipo, id, nome, tel, email, dt_cadastro, valor_mensal, categ, data_venc, data_pag, valor_pag, id_clie, id_mensal } = req.body;
+
+  const idNumber = parseInt(id, 10); // Converte o ID para número
+
+  try {
+    let updated;
+
+    if (tipo === "cliente") {
+      // Editar cliente
+      updated = await cliente.update(
+        { nome, tel, email, dt_cadastro },
+        {
+          where: { id: idNumber }, // Usa o ID numérico
+        }
+      );
+      res.render("editar-cliente", { mensagem: "Cliente atualizado com sucesso" });
+
+    } else if (tipo === "mensalidade") {
+      // Editar mensalidade
+      updated = await mensalidade.update(
+        { valor_mensal, categ, data_venc },
+        {
+          where: { id: idNumber }, // Usa o ID numérico
+        }
+      );
+      res.render("editar-mensalidade", { mensagem: "Mensalidade atualizada com sucesso" });
+
+    } else if (tipo === "pagamento") {
+      // Editar pagamento
+      updated = await pagamento.update(
+        { data_pag, valor_pag, id_clie, id_mensal },
+        {
+          where: { id: idNumber }, // Usa o ID numérico
+        }
+      );
+      res.render("editar-pagamento", { mensagem: "Pagamento atualizado com sucesso" });
+      
+    } else {
+      // Se o tipo não for válido
+      res.status(400).render("erro", { mensagem: "Tipo de edição não válido." });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).render("erro", { mensagem: "Ocorreu um erro ao tentar atualizar." });
+  }
+});
+
+// Rota para exibir o formulário de edição (pode ser genérica ou separada, dependendo da necessidade)
+app.get("/editar", function (req, res) {
+  res.render("editar", { mensagem: "Escolha o tipo de edição: cliente, mensalidade ou pagamento" });
+});
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // CLIENTE
 // salvar
+app.get("/cliente", async function (req, res) {
+  res.render("cliente")
+});
+
 app.post("/cliente", async function (req, res) {
     const { nome, tel, email, dt_cadastro } = req.body;
 
     const novoCliente = await cliente.create({ nome, tel, email, dt_cadastro }); //função que espera
   
-    res.json({
-      resposta: "cliente criado com sucesso",
-      cliente: novoCliente,
-    });
+    res.redirect("/home");
 });
 
-app.get("/cliente", async function (req, res) {
-  res.render("cliente")
-});
 
 // deletar
 app.post("/deletar-cliente", async function (req, res) {
@@ -89,9 +161,9 @@ app.post("/deletar-cliente", async function (req, res) {
   });
 
   if (deleted) {
-    res.json({ mensagem: "Cliente deletado com sucesso" });
+    res.render({ mensagem: "Cliente deletado com sucesso" });
   } else {
-    res.status(404).json({ mensagem: "Cliente não encontrado" });
+    res.status(404).render({ mensagem: "Cliente não encontrado" });
   }
 });
 
@@ -112,7 +184,7 @@ app.post("/editar-cliente", async function (req, res) {
     }
   );
 
-  res.json({
+  res.render({
     mensagem: "Cliente atualizado com sucesso",
   });
 });
@@ -125,7 +197,7 @@ app.get("/editar-cliente", async function (req, res) {
 // // Exibir todos os alunos
 // app.get("/mostrar", async function (req, res) {
 //   const clientes = await cliente.findAll(); // Busca todos os registros
-//   res.json(clientes); // Retorna os registros em formato JSON
+//   res.render(clientes); // Retorna os registros em formato JSON
 // });
 
 // Exibir todos os alunos com tratativa de erros:
@@ -134,9 +206,9 @@ app.get("/editar-cliente", async function (req, res) {
 // app.get("/mostrar", async function (req, res) {
 //   try {
 //       const clientes = await cliente.findAll(); // Busca todos os registros
-//       res.json(clientes); // Retorna os registros em formato JSON
+//       res.render(clientes); // Retorna os registros em formato JSON
 //   } catch (error) {
-//       res.status(500).json({ message: `Erro ao buscar clientes: ${error}` }); // Retorna erro ao cliente
+//       res.status(500).render({ message: `Erro ao buscar clientes: ${error}` }); // Retorna erro ao cliente
 //   }
 // });
 
@@ -150,7 +222,7 @@ app.post("/mensalidade", async function (req, res) {
 
   const novaMensalidade = await mensalidades.create({ valor_mensal,categ, data_venc }); //função que espera
 
-  res.json({
+  res.render({
     resposta: "mensalidade criada com sucesso",
     mensalidades: novaMensalidade,
   });
@@ -170,9 +242,9 @@ const deleted = await mensalidades.destroy({
 });
 
 if (deleted) {
-  res.json({ mensagem: "Mensalidade deletada com sucesso" });
+  res.render({ mensagem: "Mensalidade deletada com sucesso" });
 } else {
-  res.status(404).json({ mensagem: "Mensalidade não encontrada" });
+  res.status(404).render({ mensagem: "Mensalidade não encontrada" });
 }
 });
 
@@ -192,7 +264,7 @@ const [updated] = await cliente.update(
   }
 );
 
-res.json({
+res.render({
   mensagem: "mensalidade atualizada com sucesso",
 });
 });
@@ -205,9 +277,9 @@ app.get("/editar-mensalidade", async function (req, res) {
 app.get("/mensalidades", async function (req, res) {
   try {
       const mensalidade = await mensalidades.findAll(); // Busca todos os registros
-      res.json(mensalidade); // Retorna os registros em formato JSON
+      res.render(mensalidade); // Retorna os registros em formato JSON
   } catch (error) {
-      res.status(500).json({ message: `Erro ao buscar mensalidade: ${error}` }); // Retorna erro ao cliente
+      res.status(500).render({ message: `Erro ao buscar mensalidade: ${error}` }); // Retorna erro ao cliente
   }
 });
 
@@ -221,7 +293,7 @@ app.get("/pagamento", async function (req, res) {
 
   const novoPagamento = await pagamentos.create({ data_pag, valor_pag, id_clie, id_mensal }); //função que espera
 
-  res.json({
+  res.render({
     resposta: "pagamento criada com sucesso",
     pagamentos: novoPagamento,
   });
@@ -240,7 +312,7 @@ const [updated] = await pagamentos.update(
   }
 );
 
-res.json({
+res.render({
   mensagem: "pagamento atualizada com sucesso",
 });
 });
@@ -249,9 +321,9 @@ res.json({
 app.get("/pagamentos", async function (req, res) {
   try {
       const pagamento = await pagamentos.findAll(); // Busca todos os registros
-      res.json(pagamento); // Retorna os registros em formato JSON
+      res.render("contratos"); // Retorna os registros em formato JSON
   } catch (error) {
-      res.status(500).json({ message: `Erro ao buscar pagamento: ${error}` }); // Retorna erro ao cliente
+      res.status(500).render({ message: `Erro ao buscar pagamento: ${error}` }); // Retorna erro ao cliente
   }
 });
 
@@ -261,19 +333,22 @@ app.get("/mostrar", async function (req, res) {
 
     const pagamento = await pagamentos.findAll(); // Busca todos os registros
     const mensalidade = await mensalidades.findAll(); // Busca todos os registros
-    res.json({pagamento, mensalidade}); // Retorna os registros em formato JSON
+    res.render(""); // Retorna os registros em formato JSON
 
 } catch (error) {
-    res.status(500).json({ message: `Erro ao mostrar tudo: ${error}` }); // Retorna erro ao cliente
+    res.status(500).render({ message: `Erro ao mostrar tudo: ${error}` }); // Retorna erro ao cliente
 }
-
 });
 
 // comando que seta o handlebars
 app.engine("handlebars", engine())
 app.set("view engine", "handlebars")
 
+
 //###Servidor###
 app.listen(3031, function () {
     console.log("Server is running on port 3031");
 });
+
+
+  
