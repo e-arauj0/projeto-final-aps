@@ -1,0 +1,23 @@
+<div style="color: white; align-items:center; height: 600px;">
+    <h1>PAGAMENTOS REALIZADOS</h1>
+    <table border="1px">
+        <tr>
+            <td>id</td>
+            <td>data que foi pago</td>
+            <td>valor pago</td>
+            <td>id cliente</td>   
+            <td>id mensalidade</td>
+            <td>editar</td>        
+        </tr>
+        {{#each calendario}}
+            <tr>
+                <td>{{this.id}}</td>
+                <td>{{this.data_pag}}</td>
+                <td>{{this.valor_pag}}</td>
+                <td>{{this.id_clie}}</td>
+                <td>{{this.id_mensal}}</td>
+                <td><a href="/edicao-pagamento/{{this.id}}">editar</a></td>
+            </tr>
+        {{/each}}
+    </table>
+</div>

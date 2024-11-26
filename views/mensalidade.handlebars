@@ -1,3 +1,23 @@
-<div style="color: white; align-items:center; height: 600px; ">
-    <h1>RELATORIO DE PAGAMENTOS</h1>
+<div style="color: white; align-items:center; height: 600px;  ">
+    <h1>MENSALIDADES CADASTRADAS</h1>
+    <table border="1px" style="align-items: center;">
+        <tr>
+            <td>id</td>
+            <td>valor mensal</td>
+            <td>categoria</td>
+            <td>editar</td>
+            <td>apagar</td>
+        </tr>
+        {{#each mensalidade}}
+            <tr>
+                <td>{{this.id}}</td>
+                <td>{{this.valor_mensal}}</td>
+                <td>{{this.categ}}</td>
+                <td><a href="/edicao-mensalidade/{{this.id}}">editar</a></td>
+                <td><form action="/deletar-mensalidade" method="POST">
+                <input type="hidden" value="{{this.id}}" name="id">
+                <input type="submit" value="apagar"></form></td>
+            </tr>
+        {{/each}}
+    </table>
 </div>

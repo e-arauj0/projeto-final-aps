@@ -1,8 +1,31 @@
 <div class="texto">
 
-    <div style="color: white; align-items:center; height: 600px; ">
-    <h1>EDIÇÕES GERAIS</h1>
+    <div style="color: white; align-items:center; height: 100px; ">
+    <h1>EDIÇÕES</h1>
     </div>
 
-    <a href="/editar">editar tudo</a>
+<div>
+    <form action="/edicao-mensalidade/:id" method="POST">
+
+        {{!-- nome --}}
+      <div class="input-group">
+        <label for="valor_mensal">insira o valor mensal</label>
+        <input type="number" id="valor_mensal" name="valor_mensal" required>
+      </div>
+
+        {{!-- telefone --}}
+      <div class="input-group">
+        <label for="categ">descreva o tipo de pagamento:</label>
+        <input type="text" id="categ" name="categ" required>
+      </div>
+
+        {{!-- data vencimento --}}
+      <div class="input-group">
+        <label for="data_venc">data de vencimento</label>
+        <input type="date" id="data_venc" name="data_venc" required>
+      </div>
+
+      <input type="submit">Enviar</input>
+
+    </form>
 </div>
