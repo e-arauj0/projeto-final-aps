@@ -1,6 +1,6 @@
 <div style="color: white; align-items:center; height: 600px;">
     <h1>PAGAMENTOS REALIZADOS</h1>
-    <table border="1px">
+    <table style="border: 3px solid black; border-collapse: collapse;">
         <tr>
             <td>id</td>
             <td>data que foi pago</td>
@@ -17,6 +17,9 @@
                 <td>{{this.id_clie}}</td>
                 <td>{{this.id_mensal}}</td>
                 <td><a href="/edicao-pagamento/{{this.id}}">editar</a></td>
+                <td><form action="/deletar-pagamento" method="POST">
+                <input type="hidden" value="{{this.id}}" name="id">
+                <input type="submit" value="apagar"></form></td>
             </tr>
         {{/each}}
     </table>

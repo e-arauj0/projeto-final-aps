@@ -168,8 +168,7 @@ app.post("/salvar-pagamento", async function (req, res) {
   const { data_pag, valor_pag, id_clie, id_mensal } = req.body;
 
   const novoPagamento = await pagamentos.create({ data_pag, valor_pag, id_clie, id_mensal }); //função que espera
-s
-  res.redirect("/calendario");
+  res.redirect("/home");
 });
 
 
@@ -197,6 +196,19 @@ app.get("/editar-pagamento", async function (req, res) {
     res.render("editar-pag", {pagamento: pagamento})
   });
 
+  
+  // deletar
+  app.post("/deletar-pagamento", async function (req, res) {
+  const { id } = req.body;
+
+  const deleted = await pagamentos.destroy({ raw: true, where: { id: id }});
+  
+  if (deleted) {
+    res.redirect("/pagamentos");
+  } else {
+    res.status(404).redirect("/pagamentos");
+  }
+  });
 
 // comando que seta o handlebars
 app.engine("handlebars", engine())
